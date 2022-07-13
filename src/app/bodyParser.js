@@ -21,16 +21,20 @@ const getBoundary = (contentType) => {
   return boundary;
 };
 
+const removeQuote = (value) => {
+  if (value.startsWith('"') || value.endsWith('"')) {
+    value = value.slice(1, -1);
+  }
+  return value;
+};
+
 const parseHeader = (headers) => {
   const header = {};
-  const headersFields = headers.slice(CRLF.length).split(';');
-  const [DisposKey, DisposValue] = headersFields[0].split(':');
-  console.log('p', DisposKey, DisposValue);
-  header[DisposKey] = DisposValue.trim();
+  const headersFields = headers.slice(CRLF.length).split(/;|\r\n/);
 
-  headersFields.slice(1).map((field) => {
-    const [key, value] = field.split('=');
-    header[key.trim().toLowerCase()] = value.trim();
+  headersFields.map((field) => {
+    const [key, value] = field.split(/=|:/);
+    header[key.trim().toLowerCase()] = removeQuote(value.trim());
   });
 
   return header;
@@ -64,10 +68,15 @@ const bodyParser = (req, res, next) => {
   });
 
   req.on('end', () => {
+    const body = {};
     const boundaryBuffer = new Buffer.from(boundary, 'utf8');
     const fields = parseBody(rawBodyBuffer, boundaryBuffer);
     const parsedFields = fields.map(separateFields);
-    console.log('parser', parsedFields);
+
+    parsedFields.forEach((field) => {
+      body[field.header.name] = field;
+    });
+    req.body = body;
     next();
   });
 };

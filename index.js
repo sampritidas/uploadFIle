@@ -8,7 +8,7 @@ const logRequest = (req, res, next) => {
   next();
 };
 
-const handlers = [logRequest, bodyParser, serveFileHandler, notFoundHandler];
+const handlers = [logRequest, bodyParser, serveFileHandler, fileUploadHandler, notFoundHandler];
 
 const PORT = 4444;
 startServer(PORT, createRouter(...handlers));
