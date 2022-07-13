@@ -1,0 +1,10 @@
+"------WebKitFormBoundaryuSHvroz3sdxr9Eo7\r\n
+Content-Disposition: form-data; name=\"name\"\r\n
+\r\n
+Sampriti\r\n
+------WebKitFormBoundaryuSHvroz3sdxr9Eo7\r\n
+Content-Disposition: form-data; name=\"filename\"; filename=\"testFile.txt\"\r\n
+Content-Type: text/plain\r\n
+\r\n
+Here I am trying to upload a file.\nThats why I make this file.\r\n
+------WebKitFormBoundaryuSHvroz3sdxr9Eo7--\r\n"
