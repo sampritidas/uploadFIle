@@ -1,5 +1,3 @@
-const fs = require('fs');
-
 const CRLF = Buffer.from('\r\n');
 const DCRLF = Buffer.from('\r\n\r\n');
 
@@ -23,15 +21,30 @@ const getBoundary = (contentType) => {
   return boundary;
 };
 
-const separateFields = (field) => {
-  const rawHeaders = field.slice(0, field.indexOf(DCRLF));
-  const stringHeader = rawHeaders.toString();
+const parseHeader = (headers) => {
+  const header = {};
+  const headersFields = headers.slice(CRLF.length).split(';');
+  const [DisposKey, DisposValue] = headersFields[0].split(':');
+  console.log('p', DisposKey, DisposValue);
+  header[DisposKey] = DisposValue.trim();
 
-  const startIndex = rawHeaders.length + DCRLF.length;
+  headersFields.slice(1).map((field) => {
+    const [key, value] = field.split('=');
+    header[key.trim().toLowerCase()] = value.trim();
+  });
+
+  return header;
+};
+
+const separateFields = (field) => {
+  const headersBuffer = field.slice(0, field.indexOf(DCRLF));
+  const header = parseHeader(headersBuffer.toString());
+
+  const startIndex = headersBuffer.length + DCRLF.length;
   const endIndex = CRLF.length;
   const value = field.slice(startIndex, -endIndex);
 
-  return { stringHeader, value };
+  return { header, value };
 };
 
 const bodyParser = (req, res, next) => {
